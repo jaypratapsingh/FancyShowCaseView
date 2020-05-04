@@ -49,7 +49,8 @@ class SecondActivity : BaseActivity() {
 
     private fun focusOnButton() {
         FancyShowCaseView.Builder(this@SecondActivity)
-                .focusOn(button1)
+                .focusOnArrayView(arrayListOf(button1, button2))
+//                .focusOn(button1)
                 .title("Focus a view")
                 .fitSystemWindows(true)
                 .build()

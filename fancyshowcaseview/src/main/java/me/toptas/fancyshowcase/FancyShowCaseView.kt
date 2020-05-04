@@ -76,17 +76,10 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     private var mRoot: ViewGroup? = null
     private var fancyImageView: FancyImageView? = null
 
-    val focusCenterX: Int
-        get() = presenter.circleCenterX
-
-    val focusCenterY: Int
-        get() = presenter.circleCenterY
-
-    val focusWidth: Int
-        get() = presenter.focusWidth
-
-    val focusHeight: Int
-        get() = presenter.focusHeight
+    var focusCenterX: Int = 0
+    var focusCenterY: Int = 0
+    var focusWidth: Int = 0
+    var focusHeight: Int = 0
 
     val focusShape: FocusShape
         get() = presenter.focusShape
@@ -150,11 +143,13 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun setCalculatorParams() {
-        if (presenter.hasFocus) {
-            mCenterX = presenter.circleCenterX
-            mCenterY = presenter.circleCenterY
+        for ((index, view) in presenter.circleCenterX.withIndex()) {
+            if (presenter.hasFocus) {
+                mCenterX = presenter.circleCenterX[index]
+                mCenterY = presenter.circleCenterY[index]
+            }
+            presenter.setFocusPositions()
         }
-        presenter.setFocusPositions()
     }
 
 
@@ -280,14 +275,16 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
         globalLayoutListener {
             val revealRadius = hypot(width.toDouble(), height.toDouble()).toInt()
             var startRadius = 0
-            if (props.focusedView != null) {
-                startRadius = props.focusedView!!.width() / 2
-            } else if (props.focusCircleRadius > 0 || props.focusRectangleWidth > 0 || props.focusRectangleHeight > 0) {
-                mCenterX = props.focusPositionX
-                mCenterY = props.focusPositionY
-            }
-            circularEnterAnimation(activity, mCenterX, mCenterY, startRadius, revealRadius, mAnimationDuration) {
-                props.animationListener?.onEnterAnimationEnd()
+            for (index in 0 until props.focusedViewArray.size) {
+                if (props.focusedView != null) {
+                    startRadius = props.focusedView!!.width() / 2
+                } else if (props.focusCircleRadius > 0 || props.focusRectangleWidth > 0 || props.focusRectangleHeight > 0) {
+                    mCenterX = props.focusPositionX
+                    mCenterY = props.focusPositionY
+                }
+                circularEnterAnimation(activity, mCenterX, mCenterY, startRadius, revealRadius, mAnimationDuration) {
+                    props.animationListener?.onEnterAnimationEnd()
+                }
             }
         }
     }
@@ -416,10 +413,35 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
         fun clickableOn(view: View) = apply { props.clickableView = FocusedView(view) }
 
         /**
+        * @param view view to focus
+        * @return Builder
+        */
+        fun clickableOnArray(viewArray: ArrayList<View>) = apply {
+            props.clickableViewArray.clear()
+            for (view in viewArray) {
+                props.clickableViewArray.add(FocusedView(view))
+            }
+        }
+
+
+        /**
          * @param view view to focus
          * @return Builder
          */
-        fun focusOn(view: View) = apply { props.focusedView = FocusedView(view) }
+        fun focusOn(view: View) = apply {
+                props.focusedView = FocusedView(view)
+        }
+
+        /**
+         * @param view view to focus
+         * @return Builder
+         */
+        fun focusOnArrayView(viewArray: ArrayList<View>) = apply {
+            props.focusedViewArray.clear()
+            for (view in viewArray) {
+                props.focusedViewArray.add(FocusedView(view))
+            }
+        }
 
         /**
          * @param backgroundColor background color of FancyShowCaseView

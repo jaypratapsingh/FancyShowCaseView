@@ -18,15 +18,15 @@ internal class Presenter(private val pref: SharedPref,
     var centerX: Int = 0
     var centerY: Int = 0
     var hasFocus = false
-    var circleCenterX = 0
-    var circleCenterY = 0
+    var circleCenterX: ArrayList<Int> = arrayListOf()
+    var circleCenterY: ArrayList<Int> = arrayListOf()
     var focusShape = props.focusShape
 
     var bitmapWidth = 0
     var bitmapHeight = 0
-    var focusWidth = 0
-    var focusHeight = 0
-    var viewRadius = 0
+    var focusWidth: ArrayList<Int> = arrayListOf()
+    var focusHeight: ArrayList<Int> = arrayListOf()
+    var viewRadius: ArrayList<Int> = arrayListOf()
 
     fun initialize() {
         props.backgroundColor = if (props.backgroundColor != 0)
@@ -37,8 +37,8 @@ internal class Presenter(private val pref: SharedPref,
         props.titleStyle = if (props.titleStyle != 0) props.titleStyle else R.style.FancyShowCaseDefaultTitleStyle
 
 
-        centerX = device.deviceWidth() / 2
-        centerY = device.deviceHeight() / 2
+        centerX = (device.deviceWidth() / 2)
+        centerY = (device.deviceHeight() / 2)
     }
 
 
@@ -49,10 +49,12 @@ internal class Presenter(private val pref: SharedPref,
             return
         }
         // if view is not laid out get, width/height values in onGlobalLayout
-        if (props.focusedView?.cantFocus() == true) {
-            props.focusedView?.waitForLayout { onShow() }
-        } else {
-            onShow()
+        for (view in props.focusedViewArray) {
+            if (view?.cantFocus() == true) {
+                view.waitForLayout { onShow() }
+            } else {
+                onShow()
+            }
         }
     }
 
@@ -61,21 +63,22 @@ internal class Presenter(private val pref: SharedPref,
         val deviceHeight = device.deviceHeight()
         bitmapWidth = deviceWidth
         bitmapHeight = deviceHeight - if (props.fitSystemWindows) 0 else device.getStatusBarHeight()
-        if (props.focusedView != null) {
-            focusWidth = props.focusedView!!.width()
-            focusHeight = props.focusedView!!.height()
-            props.focusedView?.apply {
-                val center = getCircleCenter(this)
-                circleCenterX = center.x
-                circleCenterY = center.y
+        for (view in props.focusedViewArray) {
+            if (view != null) {
+                focusWidth.add(view.width())
+                focusHeight.add(view.height())
+                view.apply {
+                    val center = getCircleCenter(this)
+                    circleCenterX.add(center.x)
+                    circleCenterY.add(center.y)
+                }
+
+                viewRadius.add(((hypot(view.width().toDouble(), view.height().toDouble()) / 2).toInt() * props.focusCircleRadiusFactor).toInt())
+                hasFocus = true
+            } else {
+                hasFocus = false
             }
-
-            viewRadius = ((hypot(props.focusedView!!.width().toDouble(), props.focusedView!!.height().toDouble()) / 2).toInt() * props.focusCircleRadiusFactor).toInt()
-            hasFocus = true
-        } else {
-            hasFocus = false
         }
-
     }
 
     fun writeShown(fancyId: String?) {
@@ -85,43 +88,58 @@ internal class Presenter(private val pref: SharedPref,
     }
 
     private fun setRectPosition(positionX: Int, positionY: Int, rectWidth: Int, rectHeight: Int) {
-        circleCenterX = positionX
-        circleCenterY = positionY
-        focusWidth = rectWidth
-        focusHeight = rectHeight
+        circleCenterX.add(positionX)
+        circleCenterY.add(positionY)
+        focusWidth.add(rectWidth)
+        focusHeight.add(rectHeight)
         focusShape = FocusShape.ROUNDED_RECTANGLE
         hasFocus = true
     }
 
     private fun setCirclePosition(positionX: Int, positionY: Int, radius: Int) {
-        circleCenterX = positionX
-        viewRadius = radius
-        circleCenterY = positionY
+        circleCenterX.add(positionX)
+        viewRadius.add(radius)
+        circleCenterY.add(positionY)
         focusShape = FocusShape.CIRCLE
         hasFocus = true
     }
 
     fun circleRadius(animCounter: Int, animMoveFactor: Double): Float {
-        return (viewRadius + animCounter * animMoveFactor).toFloat()
+        for (radius in viewRadius) {
+            return (radius + animCounter * animMoveFactor).toFloat()
+        }
+        return 0f
     }
 
     fun roundRectLeft(animCounter: Int, animMoveFactor: Double): Float {
-        return (circleCenterX.toDouble() - (focusWidth / 2).toDouble() - animCounter * animMoveFactor).toFloat()
+        for ((index, center) in circleCenterX.withIndex()) {
+            return (circleCenterX[index].toDouble() - (focusWidth[index] / 2).toDouble() - animCounter * animMoveFactor).toFloat()
+        }
+        return 0f
     }
 
 
     fun roundRectTop(animCounter: Int, animMoveFactor: Double): Float {
-        return (circleCenterY.toDouble() - (focusHeight / 2).toDouble() - animCounter * animMoveFactor).toFloat()
+        for ((index, center) in circleCenterY.withIndex()) {
+            return (circleCenterY[index].toDouble() - (focusHeight[index] / 2).toDouble() - animCounter * animMoveFactor).toFloat()
+        }
+        return 0f
     }
 
 
     fun roundRectRight(animCounter: Int, animMoveFactor: Double): Float {
-        return (circleCenterX.toDouble() + (focusWidth / 2).toDouble() + animCounter * animMoveFactor).toFloat()
+        for ((index, center) in circleCenterX.withIndex()) {
+            return (circleCenterX[index].toDouble() + (focusWidth[index] / 2).toDouble() + animCounter * animMoveFactor).toFloat()
+        }
+        return 0f
     }
 
 
     fun roundRectBottom(animCounter: Int, animMoveFactor: Double): Float {
-        return (circleCenterY.toDouble() + (focusHeight / 2).toDouble() + animCounter * animMoveFactor).toFloat()
+        for ((index, center) in circleCenterX.withIndex()) {
+            return (circleCenterY[index].toDouble() + (focusHeight[index] / 2).toDouble() + animCounter * animMoveFactor).toFloat()
+        }
+        return 0f
     }
 
     fun getCircleCenter(view: IFocusedView): CircleCenter {
@@ -191,18 +209,20 @@ internal class Presenter(private val pref: SharedPref,
         val spaceAbove = top.toInt()
         val spaceBelow = bitmapHeight - bottom.toInt()
         //val params = view.layoutParams as RelativeLayout.LayoutParams
-
-        val halfViewHeight = if (focusShape == FocusShape.ROUNDED_RECTANGLE) focusHeight / 2 else viewRadius
-
         val autoPos = AutoTextPosition()
-        if (spaceAbove > spaceBelow) {
-            autoPos.bottomMargin = bitmapHeight - (circleCenterY + halfViewHeight)
-            autoPos.topMargin = 0
-            autoPos.height = top.toInt()
-        } else {
-            autoPos.topMargin = circleCenterY + halfViewHeight
-            autoPos.bottomMargin = 0
-            autoPos.height = (bitmapHeight - top).toInt()
+        for ((index, center) in props.focusedViewArray.withIndex()) {
+
+            val halfViewHeight = if (focusShape == FocusShape.ROUNDED_RECTANGLE) focusHeight[index] / 2 else viewRadius[index]
+
+            if (spaceAbove > spaceBelow) {
+                autoPos.bottomMargin = bitmapHeight - (circleCenterY[index] + halfViewHeight)
+                autoPos.topMargin = 0
+                autoPos.height = top.toInt()
+            } else {
+                autoPos.topMargin = circleCenterY[index] + halfViewHeight
+                autoPos.bottomMargin = 0
+                autoPos.height = (bitmapHeight - top).toInt()
+            }
         }
         return autoPos
     }

@@ -46,7 +46,9 @@ internal data class Properties(
         var dismissListener: DismissListener? = null,
         var queueListener: OnQueueListener? = null,
         var focusedView: IFocusedView? = null,
-        var clickableView: IFocusedView? = null
+        var focusedViewArray: ArrayList<IFocusedView?> = arrayListOf(),
+        var clickableView: IFocusedView? = null,
+        var clickableViewArray: ArrayList<IFocusedView?> = arrayListOf()
 )
 
 internal data class AndroidProperties(
