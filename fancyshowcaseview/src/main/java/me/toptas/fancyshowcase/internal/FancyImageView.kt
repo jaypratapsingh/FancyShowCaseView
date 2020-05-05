@@ -154,15 +154,30 @@ class FancyImageView : AppCompatImageView {
      * @param canvas canvas to draw
      */
     private fun drawCircle(canvas: Canvas) {
-        for ((index, view) in presenter.circleCenterX.withIndex()) {
-            canvas.drawCircle(presenter.circleCenterX[index].toFloat(), presenter.circleCenterY[index].toFloat(),
+        if (presenter.circleCenterXArray.size > 0) {
+            for ((index, view) in presenter.circleCenterXArray.withIndex()) {
+                canvas.drawCircle(presenter.circleCenterXArray[index].toFloat(), presenter.circleCenterYArray[index].toFloat(),
+                        presenter.circleRadius(animCounter, animMoveFactor), erasePaint)
+
+                if (focusBorderSize > 0) {
+                    path.apply {
+                        reset()
+                        moveTo(presenter.circleCenterXArray[index].toFloat(), presenter.circleCenterYArray[index].toFloat())
+                        addCircle(presenter.circleCenterXArray[index].toFloat(), presenter.circleCenterYArray[index].toFloat(),
+                                presenter.circleRadius(animCounter, animMoveFactor), Path.Direction.CW)
+                        canvas.drawPath(this, circleBorderPaint)
+                    }
+                }
+            }
+        } else {
+            canvas.drawCircle(presenter.circleCenterX.toFloat(), presenter.circleCenterY.toFloat(),
                     presenter.circleRadius(animCounter, animMoveFactor), erasePaint)
 
             if (focusBorderSize > 0) {
                 path.apply {
                     reset()
-                    moveTo(presenter.circleCenterX[index].toFloat(), presenter.circleCenterY[index].toFloat())
-                    addCircle(presenter.circleCenterX[index].toFloat(), presenter.circleCenterY[index].toFloat(),
+                    moveTo(presenter.circleCenterX.toFloat(), presenter.circleCenterY.toFloat())
+                    addCircle(presenter.circleCenterX.toFloat(), presenter.circleCenterY.toFloat(),
                             presenter.circleRadius(animCounter, animMoveFactor), Path.Direction.CW)
                     canvas.drawPath(this, circleBorderPaint)
                 }
@@ -186,12 +201,23 @@ class FancyImageView : AppCompatImageView {
             canvas.drawRoundRect(this, roundRectRadius.toFloat(), roundRectRadius.toFloat(), erasePaint)
         }
         if (focusBorderSize > 0) {
-            for ((index, view) in presenter.circleCenterX.withIndex()) {
-                path.apply {
-                    reset()
-                    moveTo(presenter.circleCenterX[index].toFloat(), presenter.circleCenterY[index].toFloat())
-                    addRoundRect(rectF, roundRectRadius.toFloat(), roundRectRadius.toFloat(), Path.Direction.CW)
-                    canvas.drawPath(this, circleBorderPaint)
+            if (presenter.circleCenterXArray.size > 0) {
+                for ((index, view) in presenter.circleCenterXArray.withIndex()) {
+                    path.apply {
+                        reset()
+                        moveTo(presenter.circleCenterXArray[index].toFloat(), presenter.circleCenterYArray[index].toFloat())
+                        addRoundRect(rectF, roundRectRadius.toFloat(), roundRectRadius.toFloat(), Path.Direction.CW)
+                        canvas.drawPath(this, circleBorderPaint)
+                    }
+                }
+            } else {
+                if (focusBorderSize > 0) {
+                    path.apply {
+                        reset()
+                        moveTo(presenter.circleCenterX.toFloat(), presenter.circleCenterY.toFloat())
+                        addRoundRect(rectF, roundRectRadius.toFloat(), roundRectRadius.toFloat(), Path.Direction.CW)
+                        canvas.drawPath(this, circleBorderPaint)
+                    }
                 }
             }
         }

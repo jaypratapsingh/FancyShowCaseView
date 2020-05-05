@@ -76,10 +76,17 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     private var mRoot: ViewGroup? = null
     private var fancyImageView: FancyImageView? = null
 
-    var focusCenterX: Int = 0
-    var focusCenterY: Int = 0
-    var focusWidth: Int = 0
-    var focusHeight: Int = 0
+    val focusCenterX: Int
+        get() = presenter.circleCenterX
+
+    val focusCenterY: Int
+        get() = presenter.circleCenterY
+
+    val focusWidth: Int
+        get() = presenter.focusWidth
+
+    val focusHeight: Int
+        get() = presenter.focusHeight
 
     val focusShape: FocusShape
         get() = presenter.focusShape
@@ -143,10 +150,18 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun setCalculatorParams() {
-        for ((index, view) in presenter.circleCenterX.withIndex()) {
+        if (presenter.circleCenterXArray.size > 0) {
+            for ((index, view) in presenter.circleCenterXArray.withIndex()) {
+                if (presenter.hasFocus) {
+                    mCenterX = presenter.circleCenterXArray[index]
+                    mCenterY = presenter.circleCenterYArray[index]
+                }
+                presenter.setFocusPositions()
+            }
+        } else {
             if (presenter.hasFocus) {
-                mCenterX = presenter.circleCenterX[index]
-                mCenterY = presenter.circleCenterY[index]
+                mCenterX = presenter.circleCenterX
+                mCenterY = presenter.circleCenterY
             }
             presenter.setFocusPositions()
         }
@@ -275,7 +290,19 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
         globalLayoutListener {
             val revealRadius = hypot(width.toDouble(), height.toDouble()).toInt()
             var startRadius = 0
-            for (index in 0 until props.focusedViewArray.size) {
+            if (props.focusedViewArray.size > 0) {
+                for (index in 0 until props.focusedViewArray.size) {
+                    if (props.focusedView != null) {
+                        startRadius = props.focusedView!!.width() / 2
+                    } else if (props.focusCircleRadius > 0 || props.focusRectangleWidth > 0 || props.focusRectangleHeight > 0) {
+                        mCenterX = props.focusPositionX
+                        mCenterY = props.focusPositionY
+                    }
+                    circularEnterAnimation(activity, mCenterX, mCenterY, startRadius, revealRadius, mAnimationDuration) {
+                        props.animationListener?.onEnterAnimationEnd()
+                    }
+                }
+            } else {
                 if (props.focusedView != null) {
                     startRadius = props.focusedView!!.width() / 2
                 } else if (props.focusCircleRadius > 0 || props.focusRectangleWidth > 0 || props.focusRectangleHeight > 0) {
