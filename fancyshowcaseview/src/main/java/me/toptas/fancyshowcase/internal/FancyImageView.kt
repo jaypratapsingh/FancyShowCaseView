@@ -96,11 +96,11 @@ class FancyImageView : AppCompatImageView {
         backgroundPaint = Paint().apply {
             isAntiAlias = true
             color = bgColor
-            alpha = 0xFF
+            alpha = 0xAA
         }
         erasePaint = Paint().apply {
             xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-            alpha = 0xFF
+            alpha = 0xAA
             isAntiAlias = true
         }
         path = Path()
