@@ -100,8 +100,6 @@ class FancyImageView : AppCompatImageView {
         }
         erasePaint = Paint().apply {
             xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-            alpha = 0xAA
-            isAntiAlias = true
         }
         path = Path()
         circleBorderPaint = Paint().apply {
