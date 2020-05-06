@@ -16,7 +16,6 @@
 
 package me.toptas.fancyshowcase
 
-import me.toptas.fancyshowcase.listener.DismissListener
 import me.toptas.fancyshowcase.listener.OnCompleteListener
 import me.toptas.fancyshowcase.listener.OnQueueListener
 import java.util.LinkedList

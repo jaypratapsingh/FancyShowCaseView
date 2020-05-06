@@ -17,12 +17,14 @@
 package me.toptas.fancyshowcasesample
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
 import kotlinx.android.synthetic.main.activity_second.*
 import me.toptas.fancyshowcase.FancyShowCaseView
+import me.toptas.fancyshowcase.listener.DismissListener
 
 class SecondActivity : BaseActivity() {
 
@@ -53,6 +55,15 @@ class SecondActivity : BaseActivity() {
 //                .focusOn(button1)
                 .title("Focus a view")
                 .fitSystemWindows(true)
+                .dismissListener(object : DismissListener {
+                    override fun onDismiss(id: String?) {
+                        Log.d("circle111", "circle1$id")
+                    }
+
+                    override fun onSkipped(id: String?) {
+
+                    }
+                })
                 .build()
                 .show()
     }

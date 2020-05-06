@@ -23,6 +23,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.Spanned
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
@@ -35,27 +36,15 @@ import androidx.annotation.AttrRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
-import me.toptas.fancyshowcase.ext.AnimationEndListener
-import me.toptas.fancyshowcase.ext.attachedShowCase
-import me.toptas.fancyshowcase.ext.circularEnterAnimation
-import me.toptas.fancyshowcase.ext.circularExitAnimation
-import me.toptas.fancyshowcase.ext.globalLayoutListener
-import me.toptas.fancyshowcase.ext.rootView
-import me.toptas.fancyshowcase.internal.AndroidProperties
-import me.toptas.fancyshowcase.internal.AnimationPresenter
-import me.toptas.fancyshowcase.internal.DeviceParamsImpl
-import me.toptas.fancyshowcase.internal.FadeOutAnimation
-import me.toptas.fancyshowcase.internal.FancyImageView
-import me.toptas.fancyshowcase.internal.FocusedView
-import me.toptas.fancyshowcase.internal.Presenter
-import me.toptas.fancyshowcase.internal.Properties
-import me.toptas.fancyshowcase.internal.SharedPrefImpl
-import me.toptas.fancyshowcase.internal.getStatusBarHeight
+import me.toptas.fancyshowcase.ext.*
+import me.toptas.fancyshowcase.internal.*
 import me.toptas.fancyshowcase.listener.AnimationListener
 import me.toptas.fancyshowcase.listener.DismissListener
 import me.toptas.fancyshowcase.listener.OnQueueListener
 import me.toptas.fancyshowcase.listener.OnViewInflateListener
 import kotlin.math.hypot
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * FancyShowCaseView class
@@ -188,7 +177,16 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
                             return@OnTouchListener !presenter.isWithinZone(event.x, event.y, it)
                         } ?: return@OnTouchListener false
                     }
-                    props.closeOnTouch -> hide()
+                    props.closeOnTouch -> {
+                        for (index in 0 until presenter.circleCenterXArray.size) {
+                            val touchRadius = sqrt(((event.x - presenter.circleCenterXArray[index].toDouble()).pow(2.0)
+                                    + (event.y - presenter.circleCenterYArray[index]).toDouble().pow(2.0)))
+
+                            if (touchRadius < presenter.viewRadiusArray[index]) {
+                                hide(index)
+                            }
+                        }
+                    }
                 }
             }
             true
@@ -208,19 +206,19 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     /**
      * Hides FancyShowCaseView with animation
      */
-    fun hide() {
+    fun hide(index: Int? = null) {
         if (androidProps.exitAnimation != null) {
             if (androidProps.exitAnimation is FadeOutAnimation && shouldShowCircularAnimation()) {
-                doCircularExitAnimation()
+                doCircularExitAnimation(index)
             } else {
                 androidProps.exitAnimation?.setAnimationListener(AnimationEndListener {
-                    removeView()
+                    removeView(index)
                     props.animationListener?.onExitAnimationEnd()
                 })
                 startAnimation(androidProps.exitAnimation)
             }
         } else {
-            removeView()
+            removeView(index)
         }
     }
 
@@ -320,9 +318,9 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
      * Circular reveal exit animation
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun doCircularExitAnimation() {
+    private fun doCircularExitAnimation(index: Int?) {
         circularExitAnimation(activity, mCenterX, mCenterY, mAnimationDuration) {
-            removeView()
+            removeView(index)
             props.animationListener?.onExitAnimationEnd()
         }
     }
@@ -341,10 +339,14 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
     /**
      * Removes FancyShowCaseView view from activity root view
      */
-    fun removeView() {
+    fun removeView(index : Int? = null) {
         if (fancyImageView != null) fancyImageView = null
         mRoot?.removeView(this)
-        props.dismissListener?.onDismiss(props.fancyId)
+        if (index == null) {
+            props.dismissListener?.onDismiss(props.fancyId)
+        } else {
+            props.dismissListener?.onDismiss(index.toString())
+        }
         queueListener?.onNext()
     }
 
