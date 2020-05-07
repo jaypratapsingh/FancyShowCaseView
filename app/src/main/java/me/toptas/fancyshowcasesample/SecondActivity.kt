@@ -16,15 +16,17 @@
 
 package me.toptas.fancyshowcasesample
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-
 import kotlinx.android.synthetic.main.activity_second.*
 import me.toptas.fancyshowcase.FancyShowCaseView
 import me.toptas.fancyshowcase.listener.DismissListener
+
 
 class SecondActivity : BaseActivity() {
 
@@ -50,6 +52,18 @@ class SecondActivity : BaseActivity() {
 
 
     private fun focusOnButton() {
+
+        AlertDialog.Builder(this)
+                .setTitle("Delete entry")
+                .setMessage("Are you sure you want to delete this entry?") // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                    // Continue with delete operation
+                }) // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show()
+
         FancyShowCaseView.Builder(this@SecondActivity)
                 .focusOnArrayView(arrayListOf(button1, button2))
 //                .focusOn(button1)
@@ -64,6 +78,7 @@ class SecondActivity : BaseActivity() {
 
                     }
                 })
+                .delay(1000)
                 .build()
                 .show()
     }
