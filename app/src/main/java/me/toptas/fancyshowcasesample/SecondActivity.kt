@@ -33,7 +33,7 @@ class SecondActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         focusOnButton()
 
@@ -53,7 +53,7 @@ class SecondActivity : BaseActivity() {
 
     private fun focusOnButton() {
 
-        AlertDialog.Builder(this)
+       /* AlertDialog.Builder(this)
                 .setTitle("Delete entry")
                 .setMessage("Are you sure you want to delete this entry?") // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
@@ -62,12 +62,13 @@ class SecondActivity : BaseActivity() {
                 }) // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .show()
+                .show()*/
 
         FancyShowCaseView.Builder(this@SecondActivity)
                 .focusOnArrayView(arrayListOf(button1, button2))
 //                .focusOn(button1)
                 .title("Focus a view")
+                .disableFocusAnimation()
                 .fitSystemWindows(true)
                 .dismissListener(object : DismissListener {
                     override fun onDismiss(id: String?) {

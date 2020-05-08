@@ -13,7 +13,7 @@ import me.toptas.fancyshowcase.listener.OnViewInflateListener
 internal data class Properties(
         var title: String? = null,
         var fancyId: String? = null,
-        var focusCircleRadiusFactor: Double = 1.0,
+        var focusCircleRadiusFactor: Double = 0.7,
         var backgroundColor: Int = 0,
         var focusBorderColor: Int = 0,
         var titleGravity: Int = -1,

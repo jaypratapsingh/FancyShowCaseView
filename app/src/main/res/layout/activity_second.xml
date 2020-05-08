@@ -53,11 +53,13 @@
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <Button
+            <ImageButton
                 android:id="@+id/button1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Focus" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="Focus"
+                android:background="@drawable/circular_view_background_white"/>
+
 
             <Button
                 android:id="@+id/button2"
