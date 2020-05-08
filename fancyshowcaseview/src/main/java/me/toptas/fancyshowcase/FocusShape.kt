@@ -18,5 +18,6 @@ package me.toptas.fancyshowcase
 
 enum class FocusShape {
     CIRCLE,
-    ROUNDED_RECTANGLE
+    ROUNDED_RECTANGLE,
+    NOFOCUS
 }

@@ -188,20 +188,26 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
                                 }
                             }
                         } else {
-                            if (presenter.focusShape == FocusShape.CIRCLE) {
-                                val touchRadius = sqrt(((event.x - presenter.circleCenterX.toDouble()).pow(2.0)
-                                        + (event.y - presenter.circleCenterY).toDouble().pow(2.0)))
+                            when (presenter.focusShape) {
+                                FocusShape.CIRCLE -> {
+                                    val touchRadius = sqrt(((event.x - presenter.circleCenterX.toDouble()).pow(2.0)
+                                            + (event.y - presenter.circleCenterY).toDouble().pow(2.0)))
 
-                                if (touchRadius < presenter.viewRadius) {
+                                    if (touchRadius < presenter.viewRadius) {
+                                        hide()
+                                    }
+                                }
+                                FocusShape.NOFOCUS -> {
                                     hide()
                                 }
-                            } else {
-                                val touchRadius = sqrt(((event.x - presenter.focusWidth.toDouble()).pow(2.0)
-                                        + (event.y - presenter.focusHeight).toDouble().pow(2.0)))
+                                else -> {
+                                    val touchRadius = sqrt(((event.x - presenter.focusWidth.toDouble()).pow(2.0)
+                                            + (event.y - presenter.focusHeight).toDouble().pow(2.0)))
 
-                                if (touchRadius < presenter.focusWidth ||
-                                        touchRadius < presenter.focusHeight) {
-                                    hide()
+                                    if (touchRadius < presenter.focusWidth ||
+                                            touchRadius < presenter.focusHeight) {
+                                        hide()
+                                    }
                                 }
                             }
                         }

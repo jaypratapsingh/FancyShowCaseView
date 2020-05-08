@@ -96,7 +96,7 @@ class FancyImageView : AppCompatImageView {
         backgroundPaint = Paint().apply {
             isAntiAlias = true
             color = bgColor
-            alpha = 0x99
+            alpha = 0xAA
         }
         erasePaint = Paint().apply {
             xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
