@@ -210,10 +210,10 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
                                     }
                                 }
                             }
-                            when (presenter.clickableArea) {
-                                ClickableArea.ANYWHERE -> {
-                                    hide()
-                                }
+                        }
+                        when (presenter.clickableArea) {
+                            ClickableArea.ANYWHERE -> {
+                                hide()
                             }
                         }
                     }

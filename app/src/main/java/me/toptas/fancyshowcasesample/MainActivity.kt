@@ -33,6 +33,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.activity_main.*
+import me.toptas.fancyshowcase.ClickableArea
 import me.toptas.fancyshowcase.FancyShowCaseView
 import me.toptas.fancyshowcase.FocusShape
 import me.toptas.fancyshowcase.listener.DismissListener
@@ -108,6 +109,7 @@ class MainActivity : BaseActivity() {
             FancyShowCaseView.Builder(this)
                     .focusOn(it)
                     .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                    .clickableArea(ClickableArea.ANYWHERE)
                     .roundRectRadius(90)
                     .title("Focus on View")
                     .build()
