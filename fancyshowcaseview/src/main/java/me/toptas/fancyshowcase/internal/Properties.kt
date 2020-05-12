@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.text.Spanned
 import android.view.ViewGroup
 import android.view.animation.Animation
+import me.toptas.fancyshowcase.ClickableArea
 import me.toptas.fancyshowcase.FocusShape
 import me.toptas.fancyshowcase.listener.AnimationListener
 import me.toptas.fancyshowcase.listener.DismissListener
@@ -27,6 +28,7 @@ internal data class Properties(
         var enableTouchOnFocusedView: Boolean = false,
         var fitSystemWindows: Boolean = false,
         var focusShape: FocusShape = FocusShape.CIRCLE,
+        var clickableArea: ClickableArea = ClickableArea.SPECIFIC,
         var delay: Long = 0,
         var autoPosText: Boolean = false,
         val animationDuration: Int = 400,

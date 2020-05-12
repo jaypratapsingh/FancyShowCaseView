@@ -210,6 +210,11 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
                                     }
                                 }
                             }
+                            when (presenter.clickableArea) {
+                                ClickableArea.ANYWHERE -> {
+                                    hide()
+                                }
+                            }
                         }
                     }
                 }
@@ -565,6 +570,11 @@ class FancyShowCaseView @JvmOverloads constructor(context: Context, attrs: Attri
          * Shape of focused animation
          */
         fun focusShape(focusShape: FocusShape) = apply { props.focusShape = focusShape }
+
+        /**
+         * Clikable area
+         */
+        fun clickableArea(clickableArea: ClickableArea) = apply { props.clickableArea = clickableArea }
 
         /**
          * Focus round rectangle at specific position

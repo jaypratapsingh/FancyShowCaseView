@@ -23,6 +23,7 @@ internal class Presenter(private val pref: SharedPref,
     var circleCenterX: Int = 0
     var circleCenterY: Int = 0
     var focusShape = props.focusShape
+    var clickableArea = props.clickableArea
 
     var bitmapWidth = 0
     var bitmapHeight = 0
